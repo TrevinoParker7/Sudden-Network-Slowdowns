@@ -1,3 +1,5 @@
+![image (6)](https://github.com/user-attachments/assets/13a2858a-3e92-43fe-9b05-1df1ac32d1ac)
+
 # Incident Investigation Report
 
 ## 🎯 **Use Case**
