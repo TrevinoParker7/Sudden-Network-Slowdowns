@@ -12,6 +12,28 @@ I noticed a significant network performance degradation on some of the older dev
 
 ## 📊 **Incident Summary and Findings**
 
+Goal: Gather relevant data from logs, network traffic, and endpoints.
+Consider inspecting the logs for excessive successful/failed connections from any devices.  If discovered, pivot and inspect those devices for any suspicious file or process events.
+Activity: Ensure data is available from all key sources for analysis.
+Ensure the relevant tables contain recent logs:
+DeviceNetworkEvents
+DeviceFileEvents
+DeviceProcessEvents
+
+```kql
+DeviceFileEvents
+| order by Timestamp desc 
+| take 10
+
+DeviceNetworkEvents
+| order by Timestamp desc 
+| take 10
+
+DeviceProcessEvents
+| order by Timestamp desc 
+| take 10
+```
+
 ### **Timeline Overview**
 1. **🔍 Windows-target-1 was found failing several connection requests against itself and another host on the same network.**
 
@@ -45,18 +67,16 @@ I noticed a significant network performance degradation on some of the older dev
    - **Observed Behavior:** I pivoted to the `DeviceProcessEvents` table to see if we could see anything that was suspicious around the time the port scan started. We noticed a PowerShell script named `portscan.ps1` launched at `2024-10-18T04:09:37.5180794Z`.
 
    **Detection Query (KQL):**
-   ```kql
-   let VMName = "windows-target-1";
-   let specificTime = datetime(2024-10-18T04:09:37.5180794Z);
-   DeviceProcessEvents
-   | where Timestamp between ((specificTime - 10m) .. (specificTime + 10m))
-   | where DeviceName == VMName
-   | order by Timestamp desc
-   | project Timestamp, FileName, InitiatingProcessCommandLine
-   ```
-
-   ![Screenshot 2025-01-06 111515](https://github.com/user-attachments/assets/41bbd700-b96f-4a42-b906-979bf0230f59)
-
+```kql
+let VMName = "windows-target-1";
+let specificTime = datetime(2025-01-06T06:37:00.774381Z);
+DeviceProcessEvents
+| where Timestamp between ((specificTime - 10m) .. (specificTime + 10m))
+| where DeviceName == VMName
+| order by Timestamp desc
+| project Timestamp, FileName, InitiatingProcessCommandLine
+```
+![Screenshot 2025-01-13 161326](https://github.com/user-attachments/assets/ad26dcfb-2c43-4674-8a14-f926415d9ee6)
 
 5. **📝 Response:**
    - We observed the port scan script was launched by the SYSTEM account. This is not expected behavior and it is not something that was setup by the admins. I isolated the device and ran a malware scan. The malware scan produced no results, so out of caution, I kept the device isolated and put in a ticket to have it re-image/rebuilt. Shared findings with the manager, highlighting automated archive creation. Awaiting further instructions.
