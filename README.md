@@ -1,9 +1,8 @@
+## **🎯Sudden Network Slowdowns Incident**
+
 ![image (6)](https://github.com/user-attachments/assets/13a2858a-3e92-43fe-9b05-1df1ac32d1ac)
 
 # Incident Investigation Report
-
-## 🎯 **Use Case**
-### **Sudden Network Slowdowns**
 
 ## 📚 **Scenario:**
 I noticed a significant network performance degradation on some of the older devices attached to the network in the `10.0.0.0/16` network. After ruling out external DDoS attacks, the security team suspects something might be going on internally. All traffic originating from within the local network is by default allowed by all hosts. There is also unrestricted use of PowerShell and other applications in the environment. It’s possible someone is either downloading large files or doing some kind of port scanning against hosts in the local network.
